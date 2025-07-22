@@ -14,8 +14,8 @@ INSERT INTO Salesman (Salesman_id, name, city, Comission) VALUES
     ('5003', 'Lauson Hen', 'San Jose', 0.12);
 
 CREATE TABLE IF NOT EXISTS Customer (
-    customer_id TEXT,
-    c_id TEXT PRIMARY KEY,
+    customer_id TEXT PRIMARY KEY,
+    c_id TEXT,
     city TEXT,
     grade INTEGER,
     Salesman_id TEXT,
@@ -52,44 +52,44 @@ INSERT INTO Orders (ord_no, purch_amt, ord_date, customer_id, Salesman_id) VALUE
 
 SELECT Customer.c_id, Salesman.name, Salesman.city
 FROM Customer
-JOIN Salesman ON Customer.city = Salesman.city;
+JOIN Salesman ON LOWER(Customer.city) = LOWER(Salesman.city);
 
 SELECT Customer.c_id, Salesman.name
 FROM Customer
 JOIN Salesman ON Customer.Salesman_id = Salesman.Salesman_id;
 
-SELECT Orders.ord_no, Customer.c_id, Salesman.Customer_id, Orders.Salesman_id
+SELECT Orders.ord_no, Customer.c_id, Salesman.Salesman_id, Orders.Salesman_id
 FROM Orders
-JOIN Customer ON Orders.Customer_id = Customer.Customer_id
+JOIN Customer ON Orders.customer_id = Customer.customer_id
 JOIN Salesman ON Orders.Salesman_id = Salesman.Salesman_id
-WHERE Customer.city <> Salesman.city;
+WHERE LOWER(Customer.city) <> LOWER(Salesman.city);
 
 SELECT Orders.ord_no, Customer.c_id
 FROM Orders
-JOIN Customer ON Orders.Customer_id = Customer.Customer_id
+JOIN Customer ON Orders.customer_id = Customer.customer_id;
 
-SELECT Customers.c_id AS "Customer", Customer.grade AS "Grade"
+SELECT Customer.c_id AS Customer, Customer.grade AS Grade
 FROM Orders
 JOIN Salesman ON Orders.Salesman_id = Salesman.Salesman_id
-JOIN Customer ON Orders.Customer_id = Customer.Customer_id
-WHERE Customer.grade IS NOT NULL
+JOIN Customer ON Orders.customer_id = Customer.customer_id
+WHERE Customer.grade IS NOT NULL;
 
-SELECT Customer.c_id AS "Customer",
-Customer.city AS "City",
-Salesman.name AS "Name",
-Salesman.Comission
+SELECT Customer.c_id AS Customer,
+       Customer.city AS City,
+       Salesman.name AS Name,
+       Salesman.Comission
 FROM Customer
 JOIN Salesman ON Customer.Salesman_id = Salesman.Salesman_id
 WHERE Salesman.Comission BETWEEN 0.12 AND 0.14;
 
-SELECT Orders.ord_no, Customer.c_id, Salesman.Comission AS "Comission%",
-Orders.punch_amt * Salesman.Comission AS "Comission"
+SELECT Orders.ord_no, Customer.c_id, Salesman.Comission AS ComissionPercent,
+       Orders.purch_amt * Salesman.Comission AS Comission
 FROM Orders
 JOIN Salesman ON Orders.Salesman_id = Salesman.Salesman_id
-JOIN Customer ON Orders.Customer_id = Customer.Customer_id
+JOIN Customer ON Orders.customer_id = Customer.customer_id
 WHERE Customer.grade >= 200;
 
 SELECT *
 FROM Customer
-JOIN Orders ON Customer.Customer_id = Orders.Customer_id
+JOIN Orders ON Customer.customer_id = Orders.customer_id
 WHERE Orders.ord_date = '2012-10-05';
